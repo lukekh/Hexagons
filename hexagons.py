@@ -162,7 +162,7 @@ class hexboard:
         plt.show()
     
     def game(self):
-        from IPython.display import clear_output
+        from IPython import display
 
         def keymap(char):
             try:
@@ -182,17 +182,30 @@ class hexboard:
         # Init
         usr_input = "init"    
         
+        plt.gca().set_aspect('equal', adjustable='datalim')
+        plt.axis('off')
+
         while usr_input.lower() not in ("exit", "quit"):
-            self.plot()
+            player_x, player_y = self.player.loc.cartesian()
+            board_x,  board_y  = zip(*[h.loc.cartesian() for h in self.hexset])
+
+            plt.gca().cla()
+            plt.scatter(board_x, board_y, c='steelblue')
+            plt.scatter([0], [0], c='forestgreen')
+            plt.scatter(player_x, player_y, c='firebrick')
+
+            display.display(plt.gcf())
+
             usr_input = input("Move with the hexagon around the 's' key:\n")
             self.move(*keymap(usr_input))
-            clear_output()
+            
+            display.clear_output(wait=True)
         
         self.plot()
         print("Successfully exited game")
     
     def sierpinski_walk(self, n):
-        from IPython.display import clear_output
+        from IPython import display
 
         def keymap(char):
             try:
@@ -212,10 +225,21 @@ class hexboard:
         seq = sierpinski(n)
         
         for i, letter in enumerate(seq):
-            self.plot(s=64/math.sqrt(i+1))
+            player_x, player_y = self.player.loc.cartesian()
+            board_x,  board_y  = zip(*[h.loc.cartesian() for h in self.hexset])
+
+            plt.gca().cla()
+            plt.scatter(board_x, board_y, c='steelblue', s=64/math.sqrt(i+1))
+            plt.scatter([0], [0], c='forestgreen', s=64/math.sqrt(i+1))
+            plt.scatter(player_x, player_y, c='firebrick', s=64/math.sqrt(i+1))
+            plt.gca().set_aspect('equal', adjustable='datalim')
+            plt.axis('off')
+
+            display.display(plt.gcf())
+
             self.move(*keymap(letter))
-            time.sleep(0.25)
-            clear_output()
+            time.sleep(0.1)
+            display.clear_output(wait=True)
         
         self.plot(s=64/math.sqrt(len(seq)))
     
@@ -263,10 +287,19 @@ class hexboard:
                 return (0,0,0)
         
         for i in range(n):
-            self.plot()
+            player_x, player_y = self.player.loc.cartesian()
+            board_x,  board_y  = zip(*[h.loc.cartesian() for h in self.hexset])
+
+            plt.gca().cla()
+            plt.scatter(board_x, board_y, c='steelblue', s=64/math.sqrt(i+1))
+            plt.scatter([0], [0], c='forestgreen', s=64/math.sqrt(i+1))
+            plt.scatter(player_x, player_y, c='firebrick', s=64/math.sqrt(i+1))
+            plt.gca().set_aspect('equal', adjustable='datalim')
+            plt.axis('off')
+
             self.move(*keymap(random.choice(['d', 'e', 'w', 'a', 'z', 'x'])))
-            time.sleep(0.25)
-            clear_output()
+            time.sleep(0.1)
+            clear_output(wait=True)
         
         print(f"Agent has moved {self.player.loc.hexdist()} hexes away from origin.")
         self.plot()
